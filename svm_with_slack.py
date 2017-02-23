@@ -7,6 +7,7 @@ import numpy, pylab, random, math
 def kernel(x, y):
     return numpy.dot(x, y) + 1
 
+
 def kernel_poly(x, y):
     dotPart = numpy.dot(x, y) + 1
     return numpy.power(dotPart, 3)
@@ -27,10 +28,15 @@ def buildExtras():
         q[ndex1] = -1
 
     h = numpy.zeros([20])
+    h1 = 9 * numpy.ones([20])
+    final_h = numpy.concatenate((h, h1))
 
     G = numpy.zeros((20, 20))
     numpy.fill_diagonal(G, -1)
-    return q, h, G
+    G1 = numpy.zeros((20, 20))
+    numpy.fill_diagonal(G1, 1)
+    M = numpy.concatenate((G, G1))
+    return q, final_h, M
 
 
 def indicator(x, y):
@@ -62,6 +68,8 @@ random.shuffle(data)
 
 _q, _h, _G = buildExtras()
 
+print(_h)
+
 built_matrix = buildMatrix(data, data)
 numpy.set_printoptions(precision=3)
 r = qp(matrix(built_matrix), matrix(_q), matrix(_G), matrix(_h))
@@ -69,7 +77,7 @@ r = qp(matrix(built_matrix), matrix(_q), matrix(_G), matrix(_h))
 solutions = {}
 r_x = list(r['x'])
 for i, ai in enumerate(r_x):
-    if abs(ai) > 1.0e-05:
+    if abs(ai) > 1.0e-5:
         solutions[ai] = data[i]
 print(solutions)
 
